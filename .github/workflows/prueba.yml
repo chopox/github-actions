@@ -1,4 +1,4 @@
-name: CI Pipeline Test
+name: Cypress CI Pipeline
 
 on:
   push:
@@ -9,22 +9,43 @@ on:
       - main
 
 jobs:
-  build:
+  cypress:
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node-24.14.0-chrome-145.0.7632.116-1-ff-148.0-edge-145.0.3800.70-1
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Módulos de la Caché de Cypress
+        uses: actions/cache@v3
         with:
-          node-version: '14'
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - name: Simulate installing dependencies
-        run: echo "Simulando npm install (sin package.json)"
+      - name: Activación de la Cache de Cypress
+        uses: actions/cache@v3
+        with:
+          path: .cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('package-lock.json') }}
 
-      - name: Simulate running tests
-        run: echo "Simulando npm test (sin código real)"
+      - name: Instalar dependencias
+        run: |
+          npm config set legacy-peer-deps true
+          npm ci
 
-      - name: List repo structure (debug)
-        run: ls -R
+      - name: Ejecutar los tests de Cypress
+        run: npm run test:cypress
+
+      - name: Guardar los vídeos generados por Cypress
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: videos/
+
+      - name: Guardas las capturas de pantalla generadas por Cypress
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: screenshots/
