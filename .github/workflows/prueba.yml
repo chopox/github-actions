@@ -1,22 +1,30 @@
-name: CI Pipeline
+name: CI Pipeline Test
+
 on:
   push:
     branches:
-      - main  # Activa el pipeline cuando haya un push en la rama 'main'
+      - main
   pull_request:
     branches:
-      - main  # Activa el pipeline cuando se crea un PR hacia la rama 'main'
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Clona el repositorio
+        uses: actions/checkout@v2
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'  # Define la versión de Node.js
-      - name: Install dependencies
-        run: npm install  # Instala las dependencias del proyecto
-      - name: Run tests
-        run: npm test  # Ejecuta los tests
+          node-version: '14'
+
+      - name: Simulate installing dependencies
+        run: echo "Simulando npm install (sin package.json)"
+
+      - name: Simulate running tests
+        run: echo "Simulando npm test (sin código real)"
+
+      - name: List repo structure (debug)
+        run: ls -R
